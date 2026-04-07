@@ -4,7 +4,16 @@ import com.keyin.rest.aircraft.Aircraft;
 import com.keyin.rest.airport.Airport;
 import jakarta.persistence.*;
 
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+
 @Entity
+@Getter
+@Setter
+@NoArgsConstructor
+@ToString
 public class Flight {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -19,9 +28,6 @@ public class Flight {
 	@ManyToOne
 	private Airport airportLanding;
 
-	public Flight() {
-	}
-
 	public Flight(Aircraft aircraft, Airport airportTakeOff, Airport airportLanding) {
 		this.aircraft = aircraft;
 		this.airportTakeOff = airportTakeOff;
@@ -33,45 +39,4 @@ public class Flight {
 		}
 	}
 
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	public Aircraft getAircraft() {
-		return aircraft;
-	}
-
-	public void setAircraft(Aircraft aircraft) {
-		this.aircraft = aircraft;
-	}
-
-	public Airport getAirportTakeOff() {
-		return airportTakeOff;
-	}
-
-	public void setAirportTakeOff(Airport airportTakeOff) {
-		this.airportTakeOff = airportTakeOff;
-	}
-
-	public Airport getAirportLanding() {
-		return airportLanding;
-	}
-
-	public void setAirportLanding(Airport airportLanding) {
-		this.airportLanding = airportLanding;
-	}
-
-	@Override
-	public String toString() {
-		return "Flight{" +
-				"id=" + id +
-				", aircraft=" + aircraft +
-				", airportTakeOff=" + airportTakeOff +
-				", airportLanding=" + airportLanding +
-				'}';
-	}
 }

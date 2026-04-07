@@ -4,9 +4,18 @@ import com.keyin.rest.aircraft.Aircraft;
 import jakarta.persistence.*;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+
 import java.util.List;
 
 @Entity
+@Getter
+@Setter
+@NoArgsConstructor
+@ToString
 public class Airport {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,46 +31,4 @@ public class Airport {
 	@JsonIgnore
 	private List<Aircraft> aircraftLanding;
 
-	public Airport() {
-	}
-
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public String getCode() {
-		return code;
-	}
-
-	public void setCode(String code) {
-		this.code = code;
-	}
-
-	public List<Aircraft> getAircraftLanding() {
-		return aircraftLanding;
-	}
-
-	public void setAircraftLanding(List<Aircraft> aircraft) {
-		this.aircraftLanding = aircraft;
-	}
-
-	public List<Aircraft> getAircraftTakeoff() {
-		return aircraftTakeoff;
-	}
-
-	public void setAircraftTakeoff(List<Aircraft> aircraft) {
-		this.aircraftTakeoff = aircraft;
-	}
 }
