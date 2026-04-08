@@ -1,7 +1,10 @@
 package com.keyin.rest.airport;
 
+import com.keyin.rest.airport.dto.AirportDto;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -18,6 +21,18 @@ public class AirportService {
 
 	public Iterable<Airport> getAllAirports() {
 		return airportRepository.findAll();
+	}
+
+	public List<AirportDto> getAllAirportsDto() {
+		var out = new ArrayList<AirportDto>();
+		for (Airport a : airportRepository.findAll()) {
+			AirportDto d = new AirportDto();
+			d.id = a.getId();
+			d.name = a.getName();
+			d.code = a.getCode();
+			out.add(d);
+		}
+		return out;
 	}
 
 	public Optional<Airport> getAirportById(Long id) {
@@ -53,4 +68,14 @@ public class AirportService {
 	public void deleteAirport(Long id) {
 		deleteAirportById(id);
 	}
+
+    public AirportDto getAirportDtoById(long id) {
+        var maybe = airportRepository.findById(id).orElse(null);
+        if (maybe == null) return null;
+        AirportDto d = new AirportDto();
+        d.id = maybe.getId();
+        d.name = maybe.getName();
+        d.code = maybe.getCode();
+        return d;
+    }
 }

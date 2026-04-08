@@ -1,6 +1,6 @@
 package com.keyin.rest.airport;
 
-import com.keyin.rest.aircraft.Aircraft;
+import com.keyin.rest.flight.Flight;
 import jakarta.persistence.*;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -9,13 +9,14 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Getter
 @Setter
 @NoArgsConstructor
-@ToString
+@ToString(exclude = "flightsTakeOff,flightsLanding")
 public class Airport {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,12 +24,12 @@ public class Airport {
 	private String name;
 	private String code;
 
-	@ManyToMany(mappedBy = "airportsTakeoff")
+	@OneToMany(mappedBy = "airportTakeOff", cascade = CascadeType.ALL, orphanRemoval = false)
 	@JsonIgnore
-	private List<Aircraft> aircraftTakeoff;
+	private List<Flight> flightsTakeOff = new ArrayList<>();
 
-	@ManyToMany(mappedBy = "airportsLanding")
+	@OneToMany(mappedBy = "airportLanding", cascade = CascadeType.ALL, orphanRemoval = false)
 	@JsonIgnore
-	private List<Aircraft> aircraftLanding;
+	private List<Flight> flightsLanding = new ArrayList<>();
 
 }

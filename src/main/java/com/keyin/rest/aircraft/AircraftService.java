@@ -1,5 +1,6 @@
 package com.keyin.rest.aircraft;
 
+import com.keyin.rest.aircraft.dto.AircraftDto;
 import com.keyin.rest.airport.Airport;
 import com.keyin.rest.flight.Flight;
 import com.keyin.rest.flight.FlightRepository;
@@ -11,6 +12,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class AircraftService {
@@ -102,5 +104,29 @@ public class AircraftService {
         if (!aircraftRepository.existsById(aircraftId)) return List.of();
         List<Flight> flights = flightRepository.findByAircraftId(aircraftId);
         return flights == null ? List.of() : flights;
+    }
+
+    public List<AircraftDto> getAllAircraftsDto() {
+        var list = new ArrayList<AircraftDto>();
+        for (Aircraft a : aircraftRepository.findAll()) {
+            AircraftDto d = new AircraftDto();
+            d.id = a.getId();
+            d.type = a.getType();
+            d.airlineName = a.getAirlineName();
+            d.numberOfSeats = a.getNumberOfSeats();
+            list.add(d);
+        }
+        return list;
+    }
+
+    public AircraftDto getAircraftDtoById(long id) {
+        var maybe = aircraftRepository.findById(id).orElse(null);
+        if (maybe == null) return null;
+        AircraftDto d = new AircraftDto();
+        d.id = maybe.getId();
+        d.type = maybe.getType();
+        d.airlineName = maybe.getAirlineName();
+        d.numberOfSeats = maybe.getNumberOfSeats();
+        return d;
     }
 }

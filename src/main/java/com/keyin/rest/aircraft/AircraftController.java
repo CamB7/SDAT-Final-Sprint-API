@@ -2,6 +2,7 @@ package com.keyin.rest.aircraft;
 
 import com.keyin.rest.airport.Airport;
 import com.keyin.rest.flight.Flight;
+import com.keyin.rest.aircraft.dto.AircraftDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,13 +19,15 @@ public class AircraftController {
     private AircraftService aircraftService;
 
     @GetMapping
-    public Iterable<Aircraft> getAllAircrafts() {
-        return aircraftService.getAllAircrafts();
+    public List<AircraftDto> getAllAircrafts() {
+        return aircraftService.getAllAircraftsDto();
     }
 
     @GetMapping("/{id}")
-    public Optional<Aircraft> getAircraftById(@PathVariable long id) {
-        return aircraftService.getAircraftById(id);
+    public ResponseEntity<AircraftDto> getAircraftById(@PathVariable long id) {
+        AircraftDto dto = aircraftService.getAircraftDtoById(id);
+        if (dto == null) return ResponseEntity.notFound().build();
+        return ResponseEntity.ok(dto);
     }
 
     @GetMapping("/{id}/airports")
