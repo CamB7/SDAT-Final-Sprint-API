@@ -1,9 +1,12 @@
 package com.keyin.rest.airport;
 
 import org.springframework.web.bind.annotation.*;
+import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 import java.util.Optional;
+
+import com.keyin.rest.airport.dto.AirportDto;
 
 @RestController
 public class AirportController {
@@ -15,13 +18,15 @@ public class AirportController {
 	}
 
 	@GetMapping("/airports")
-	public Iterable<Airport> getAllAirports() {
-		return airportService.getAllAirports();
+	public List<AirportDto> getAllAirports() {
+		return airportService.getAllAirportsDto();
 	}
 
 	@GetMapping("/airports/{id}")
-	public Optional<Airport> getAirportById(@PathVariable Long id) {
-		return airportService.getAirportById(id);
+	public ResponseEntity<com.keyin.rest.airport.dto.AirportDto> getAirportById(@PathVariable Long id) {
+		var dto = airportService.getAirportDtoById(id);
+		if (dto == null) return ResponseEntity.notFound().build();
+		return ResponseEntity.ok(dto);
 	}
 
 	@GetMapping("/airports/code/{code}")
