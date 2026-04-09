@@ -109,6 +109,11 @@
             <version>3.18.0</version> <!-- upgrade to patched version -->
         </dependency>
 
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
+
     </dependencies>
 
     <build>
