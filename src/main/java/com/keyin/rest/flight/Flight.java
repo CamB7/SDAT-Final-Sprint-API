@@ -43,6 +43,12 @@ public class Flight {
 	LocalDateTime scheduledArrival;
 	LocalDateTime actualArrival;
 
+	@Column(name = "flight_number")
+	private String flightNumber;
+
+	@Column(name = "airline_name")
+	private String airlineName;
+
 	@Enumerated(EnumType.STRING)
 	FlightStatus status = FlightStatus.SCHEDULED;
 
@@ -82,4 +88,6 @@ public class Flight {
 	public void setStatus(FlightStatus s) { this.status = s; }
 	public long getLastUpdated() { return this.lastUpdated; }
 	public void setLastUpdated(long t) { this.lastUpdated = t; }
+	public String getFlightNumber() { return this.flightNumber; }
+	public String getAirlineName() { return this.airlineName; }
 }

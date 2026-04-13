@@ -112,8 +112,9 @@ public class AircraftService {
             AircraftDto d = new AircraftDto();
             d.id = a.getId();
             d.type = a.getType();
-            d.airlineName = a.getAirlineName();
+            d.airlineName = a.getAirline();
             d.numberOfSeats = a.getNumberOfSeats();
+            d.flightNumber = a.getFlightNumber();
             list.add(d);
         }
         return list;
@@ -125,8 +126,9 @@ public class AircraftService {
         AircraftDto d = new AircraftDto();
         d.id = maybe.getId();
         d.type = maybe.getType();
-        d.airlineName = maybe.getAirlineName();
+        d.airlineName = maybe.getAirline();
         d.numberOfSeats = maybe.getNumberOfSeats();
+        d.flightNumber = maybe.getFlightNumber();
         return d;
     }
 }
