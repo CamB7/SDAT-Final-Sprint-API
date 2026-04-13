@@ -5,4 +5,5 @@ public class AircraftDto {
     public String type;
     public String airlineName;
     public Integer numberOfSeats;
+    public String flightNumber;
 }

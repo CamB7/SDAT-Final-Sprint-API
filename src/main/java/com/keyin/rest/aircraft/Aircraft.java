@@ -21,6 +21,8 @@ public class Aircraft {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
+	@Column(name = "flight_number")
+	private String flightNumber;
 	private String type;
 	private String airlineName;
 	private Integer numberOfSeats;
@@ -43,10 +45,11 @@ public class Aircraft {
 	@JsonIgnore
 	private List<Airport> airportsLanding = new ArrayList<>();
 
-	public Aircraft(String type, String airlineName, int numberOfSeats) {
+	public Aircraft(String type, String airlineName, int numberOfSeats, String flightNumber) {
 		this.type = type;
 		this.airlineName = airlineName;
 		this.numberOfSeats = numberOfSeats;
+		this.flightNumber = flightNumber;
 	}
 
 	public void addAirportTakeoff(Airport airport) {
@@ -63,5 +66,9 @@ public class Aircraft {
 
 	public String getAirline() {
 		return airlineName != null ? airlineName : "";
+	}
+
+	public String getFlightNumber() {
+		return flightNumber;
 	}
 }

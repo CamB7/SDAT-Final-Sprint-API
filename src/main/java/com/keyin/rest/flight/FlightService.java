@@ -18,10 +18,10 @@ import java.util.stream.Collectors;
 @Service
 public class FlightService {
 
-	private final FlightRepository flightRepository;
-	private final GateService gateService;
-	private final AircraftRepository aircraftRepository;
-	private final AirportRepository airportRepository;
+    private final FlightRepository flightRepository;
+    private final GateService gateService;
+    private final AircraftRepository aircraftRepository;
+    private final AirportRepository airportRepository;
 
     public FlightService(FlightRepository flightRepository, GateService gateService, AircraftRepository aircraftRepository, AirportRepository airportRepository) {
         this.flightRepository = flightRepository;
@@ -204,22 +204,54 @@ public class FlightService {
         return toDto(f);
     }
 
+    private String nullIfBlank(String s) {
+        if (s == null) return null;
+        String t = s.trim();
+        return t.isEmpty() ? null : t;
+    }
+
     private FlightDto toDto(Flight f) {
+        // reload the flight to ensure field-based columns are populated (avoid lazy/partial proxies)
+        Flight full = flightRepository.findById(f.getId()).orElse(f);
+
         FlightDto d = new FlightDto();
-        d.id = f.getId();
-        d.aircraftId = f.aircraft != null ? f.aircraft.getId() : null;
-	    d.airlineName = f.getAircraft() != null ? f.getAircraft().getAirline() : null;
-        d.status = f.getStatus();
-        d.scheduledDeparture = f.scheduledDeparture;
-        d.actualDeparture = f.actualDeparture;
-        d.departureGateCode = f.departureGate != null ? f.departureGate.getCode() : null;
-        d.departureAirportId = f.airportTakeOff != null ? f.airportTakeOff.getId() : null;
-        d.departureAirportCode = f.airportTakeOff != null ? f.airportTakeOff.getCode() : null;
-        d.scheduledArrival = f.scheduledArrival;
-        d.actualArrival = f.actualArrival;
-        d.arrivalGateCode = f.arrivalGate != null ? f.arrivalGate.getCode() : null;
-        d.arrivalAirportId = f.airportLanding != null ? f.airportLanding.getId() : null;
-        d.arrivalAirportCode = f.airportLanding != null ? f.airportLanding.getCode() : null;
+        d.id = full.getId();
+
+        // Prefer flight-level flight number if present, otherwise fall back to aircraft-level (read via repository)
+        String flightNum = nullIfBlank(full.getFlightNumber());
+        if (flightNum == null && full.getAircraft() != null) {
+            var maybeA = aircraftRepository.findById(full.getAircraft().getId());
+            if (maybeA.isPresent()) {
+                String aFn = maybeA.get().getFlightNumber();
+                flightNum = nullIfBlank(aFn);
+            }
+        }
+        d.flightNumber = flightNum;
+
+        d.aircraftId = full.getAircraft() != null ? full.getAircraft().getId() : null;
+
+        // Prefer flight-level airline name, otherwise fall back to aircraft via repository
+        String airline = nullIfBlank(full.getAirlineName());
+        if (airline == null && full.getAircraft() != null) {
+            var maybeA = aircraftRepository.findById(full.getAircraft().getId());
+            if (maybeA.isPresent()) {
+                String aName = maybeA.get().getAirline();
+                airline = nullIfBlank(aName);
+            }
+        }
+        d.airlineName = airline;
+
+        d.status = full.getStatus();
+        d.scheduledDeparture = full.scheduledDeparture;
+        d.actualDeparture = full.actualDeparture;
+        d.departureGateCode = full.departureGate != null ? full.departureGate.getCode() : null;
+        d.departureAirportId = full.airportTakeOff != null ? full.airportTakeOff.getId() : null;
+        d.departureAirportCode = full.airportTakeOff != null ? full.airportTakeOff.getCode() : null;
+        d.scheduledArrival = full.scheduledArrival;
+        d.actualArrival = full.actualArrival;
+        d.arrivalGateCode = full.arrivalGate != null ? full.arrivalGate.getCode() : null;
+        d.arrivalAirportId = full.airportLanding != null ? full.airportLanding.getId() : null;
+        d.arrivalAirportCode = full.airportLanding != null ? full.airportLanding.getCode() : null;
         return d;
     }
 
