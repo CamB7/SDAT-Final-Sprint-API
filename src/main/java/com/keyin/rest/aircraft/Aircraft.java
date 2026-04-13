@@ -61,4 +61,7 @@ public class Aircraft {
 		}
 	}
 
+	public String getAirline() {
+		return airlineName != null ? airlineName : "";
+	}
 }

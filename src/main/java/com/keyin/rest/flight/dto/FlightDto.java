@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 public class FlightDto {
     public Long id;
     public Long aircraftId;
+	public String airlineName;
     public FlightStatus status;
     public LocalDateTime scheduledDeparture;
     public LocalDateTime actualDeparture;

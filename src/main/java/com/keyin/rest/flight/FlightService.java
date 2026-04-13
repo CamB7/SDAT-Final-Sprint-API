@@ -208,6 +208,7 @@ public class FlightService {
         FlightDto d = new FlightDto();
         d.id = f.getId();
         d.aircraftId = f.aircraft != null ? f.aircraft.getId() : null;
+	    d.airlineName = f.getAircraft() != null ? f.getAircraft().getAirline() : null;
         d.status = f.getStatus();
         d.scheduledDeparture = f.scheduledDeparture;
         d.actualDeparture = f.actualDeparture;
