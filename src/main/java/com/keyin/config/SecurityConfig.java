@@ -45,7 +45,7 @@ public class SecurityConfig {
 						.requestMatchers(HttpMethod.GET, "/**").permitAll()
 						.requestMatchers(HttpMethod.POST, "/flights").permitAll() // <-- ADD THIS FOR TESTING
 						.anyRequest().hasRole("ADMIN")
-				)
+					)
 				.httpBasic(AbstractHttpConfigurer::disable)
 				.formLogin(AbstractHttpConfigurer::disable)
 				.build();
@@ -54,7 +54,8 @@ public class SecurityConfig {
 	@Bean
 	public CorsConfigurationSource corsConfigurationSource() {
 		CorsConfiguration configuration = new CorsConfiguration();
-		configuration.setAllowedOrigins(List.of("http://localhost:5173"));
+		// Allow the common development origins (Vite:5173, CRA:3000). Add more if your frontend uses a different port.
+		configuration.setAllowedOrigins(List.of("http://localhost:5173", "http://localhost:3000"));
 		configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
 		configuration.setAllowedHeaders(List.of("*"));
 		configuration.setAllowCredentials(true); // CRITICAL: This allows the session cookie to be sent during POSTs
