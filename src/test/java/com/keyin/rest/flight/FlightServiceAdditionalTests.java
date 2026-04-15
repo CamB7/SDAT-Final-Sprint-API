@@ -49,7 +49,7 @@ public class FlightServiceAdditionalTests {
 
     @BeforeEach
     void setUp() {
-        aircraft = new Aircraft("A320","A",150);
+	    aircraft = new Aircraft("A320", "TestAir", 150, "TA100");
         aircraft.setId(1L);
 
         airportTake = new Airport();
