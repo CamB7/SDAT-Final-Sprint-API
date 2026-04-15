@@ -39,11 +39,12 @@ public class SecurityConfig {
 				.csrf(AbstractHttpConfigurer::disable)
 				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)) // Allows JSESSIONID
 				.authorizeHttpRequests(auth -> auth
-						.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // CRITICAL: Allow preflight
+						.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 						.requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
 						.requestMatchers(HttpMethod.GET, "/auth/me").authenticated()
 						.requestMatchers(HttpMethod.GET, "/**").permitAll()
-						.requestMatchers(HttpMethod.POST, "/flights").permitAll() // <-- ADD THIS FOR TESTING
+						.requestMatchers(HttpMethod.POST, "/flights").hasRole("ADMIN")
+						.requestMatchers(HttpMethod.DELETE, "/flights/*").hasRole("ADMIN")
 						.anyRequest().hasRole("ADMIN")
 					)
 				.httpBasic(AbstractHttpConfigurer::disable)
