@@ -54,8 +54,8 @@ public class FlightServiceUnitTest {
         gate.setCode("G1");
         gate.setTerminal("T1");
 
-        aircraft = new Aircraft("A320","TestAir",150);
-		aircraft.setId(1L);
+		aircraft = new Aircraft("A320", "TestAir", 150, "TA100");
+ 		aircraft.setId(1L);
 
         airportTake = new Airport();
         airportTake.setId(1L);

@@ -5,6 +5,7 @@ import com.keyin.rest.flight.dto.FlightDto;
 import com.keyin.rest.aircraft.AircraftRepository;
 import com.keyin.rest.gate.Gate;
 import com.keyin.rest.gate.GateService;
+import com.keyin.rest.gate.GateRepository;
 import com.keyin.rest.airport.AirportRepository;
 import org.springframework.stereotype.Service;
 
@@ -20,12 +21,14 @@ public class FlightService {
 
     private final FlightRepository flightRepository;
     private final GateService gateService;
-    private final AircraftRepository aircraftRepository;
+	private final GateRepository gateRepository;
+	private final AircraftRepository aircraftRepository;
     private final AirportRepository airportRepository;
 
-    public FlightService(FlightRepository flightRepository, GateService gateService, AircraftRepository aircraftRepository, AirportRepository airportRepository) {
+    public FlightService(FlightRepository flightRepository, GateService gateService, GateRepository gateRepository, AircraftRepository aircraftRepository, AirportRepository airportRepository) {
         this.flightRepository = flightRepository;
         this.gateService = gateService;
+		this.gateRepository = gateRepository;
         this.aircraftRepository = aircraftRepository;
         this.airportRepository = airportRepository;
     }
@@ -171,32 +174,76 @@ public class FlightService {
         return toDto(saved);
     }
 
-    public FlightDto createFlightFromRequest(CreateFlightRequest req) {
-        var aircraft = aircraftRepository.findById(req.getAircraftId()).orElse(null);
-        if (aircraft == null) throw new IllegalArgumentException("Aircraft not found: " + req.getAircraftId());
+	public FlightDto createFlightFromRequest(CreateFlightRequest req) {
+		var aircraft = aircraftRepository.findById(req.getAircraftId()).orElse(null);
+		if (aircraft == null) throw new IllegalArgumentException("Aircraft not found: " + req.getAircraftId());
 
-        Flight f = new Flight();
-        f.setAircraft(aircraft);
-        if (req.getAirportTakeOffId() != null) f.setAirportTakeOff(airportRepository.findById(req.getAirportTakeOffId()).orElse(null));
-        if (req.getAirportLandingId() != null) f.setAirportLanding(airportRepository.findById(req.getAirportLandingId()).orElse(null));
-        f.setScheduledDeparture(req.getScheduledDeparture());
-        f.setScheduledArrival(req.getScheduledArrival());
-        f.setStatus(FlightStatus.SCHEDULED);
-        Flight saved = flightRepository.save(f);
-        return toDto(saved);
-    }
+		Flight f = new Flight();
+		f.setAircraft(aircraft);
 
-    public FlightDto updateFlightFromRequest(Long id, CreateFlightRequest req) {
-        Flight existing = flightRepository.findById(id).orElse(null);
-        if (existing == null) throw new IllegalArgumentException("Flight not found: " + id);
-        if (req.getAircraftId() != null) existing.setAircraft(aircraftRepository.findById(req.getAircraftId()).orElse(null));
-        if (req.getAirportTakeOffId() != null) existing.setAirportTakeOff(airportRepository.findById(req.getAirportTakeOffId()).orElse(null));
-        if (req.getAirportLandingId() != null) existing.setAirportLanding(airportRepository.findById(req.getAirportLandingId()).orElse(null));
-        existing.setScheduledDeparture(req.getScheduledDeparture());
-        existing.setScheduledArrival(req.getScheduledArrival());
-        Flight saved = flightRepository.save(existing);
-        return toDto(saved);
-    }
+		// Map the new Strings
+		f.setFlightNumber(req.getFlightNumber());
+		f.setAirlineName(req.getAirlineName());
+
+		// Look up Airports by CODE
+		if (req.getDepartureAirportCode() != null) {
+			f.setAirportTakeOff(airportRepository.findByCode(req.getDepartureAirportCode()).orElse(null));
+		}
+		if (req.getArrivalAirportCode() != null) {
+			f.setAirportLanding(airportRepository.findByCode(req.getArrivalAirportCode()).orElse(null));
+		}
+
+		// Look up Gates by CODE (Assuming you have a gateRepository and findByCode method)
+		if (req.getDepartureGateCode() != null) {
+			f.assignDepartureGate(gateRepository.findByCode(req.getDepartureGateCode()).orElse(null));
+		}
+		if (req.getArrivalGateCode() != null) {
+			f.assignArrivalGate(gateRepository.findByCode(req.getArrivalGateCode()).orElse(null));
+		}
+
+		f.setScheduledDeparture(req.getScheduledDeparture());
+		f.setScheduledArrival(req.getScheduledArrival());
+
+		// Convert the String status from React to the Enum!
+		if (req.getStatus() != null) {
+			f.setStatus(FlightStatus.valueOf(req.getStatus().toUpperCase()));
+		} else {
+			f.setStatus(FlightStatus.SCHEDULED);
+		}
+
+		Flight saved = flightRepository.save(f);
+		return toDto(saved);
+	}
+
+	public FlightDto updateFlightFromRequest(Long id, CreateFlightRequest req) {
+		Flight existing = flightRepository.findById(id).orElse(null);
+		if (existing == null) throw new IllegalArgumentException("Flight not found: " + id);
+
+		if (req.getAircraftId() != null) {
+			existing.setAircraft(aircraftRepository.findById(req.getAircraftId()).orElse(null));
+		}
+
+		if (req.getDepartureAirportCode() != null) {
+			existing.setAirportTakeOff(airportRepository.findByCode(req.getDepartureAirportCode()).orElse(null));
+		}
+
+		if (req.getArrivalAirportCode() != null) {
+			existing.setAirportLanding(airportRepository.findByCode(req.getArrivalAirportCode()).orElse(null));
+		}
+
+		if (req.getScheduledDeparture() != null) {
+			existing.setScheduledDeparture(req.getScheduledDeparture());
+		}
+		if (req.getScheduledArrival() != null) {
+			existing.setScheduledArrival(req.getScheduledArrival());
+		}
+
+		 if (req.getFlightNumber() != null) existing.setFlightNumber(req.getFlightNumber());
+		 if (req.getStatus() != null) existing.setStatus(FlightStatus.valueOf(req.getStatus()));
+
+		Flight saved = flightRepository.save(existing);
+		return toDto(saved);
+	}
 
     public FlightDto getFlightDtoById(long id) {
         Flight f = flightRepository.findById(id).orElse(null);
