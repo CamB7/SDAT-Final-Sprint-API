@@ -1,0 +1,10 @@
+services:
+  app:
+    build: .
+    image: CamB7/FlightTracker:latest
+    ports:
+      - 8081:8080
+    environment:
+      - spring.datasource.url=jdbc:mysql://docker.internal:3306/S4FinalSprintAPI
+      - spring.datasource.password=Keyin123
+      - spring.datasource.username=root
