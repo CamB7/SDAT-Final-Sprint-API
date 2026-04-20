@@ -35,17 +35,26 @@ public class SecurityConfig {
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		return http
-				.cors(cors -> cors.configurationSource(corsConfigurationSource())) // Link to the Bean below!
+				.cors(cors -> cors.configurationSource(corsConfigurationSource()))
 				.csrf(AbstractHttpConfigurer::disable)
-				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)) // Allows JSESSIONID
+
+				.sessionManagement(session ->
+						session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
+				)
+
+				.securityContext(securityContext ->
+						securityContext.requireExplicitSave(false)
+				)
+
 				.authorizeHttpRequests(auth -> auth
 						.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 						.requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
-						.requestMatchers(HttpMethod.GET, "/auth/me").authenticated()
+						.requestMatchers("/auth/**").permitAll()
 						.requestMatchers(HttpMethod.GET, "/**").permitAll()
 						.requestMatchers(HttpMethod.POST, "/flights").hasRole("ADMIN")
-						.requestMatchers(HttpMethod.DELETE, "/flights/*").hasRole("ADMIN")
-						.anyRequest().hasRole("ADMIN")
+						.requestMatchers(HttpMethod.PUT, "/flights/**").hasRole("ADMIN")
+						.requestMatchers(HttpMethod.DELETE, "/flights/**").hasRole("ADMIN")
+						.anyRequest().authenticated()
 				)
 				.httpBasic(AbstractHttpConfigurer::disable)
 				.formLogin(AbstractHttpConfigurer::disable)
@@ -56,7 +65,7 @@ public class SecurityConfig {
 	public CorsConfigurationSource corsConfigurationSource() {
 		CorsConfiguration configuration = new CorsConfiguration();
 		// Allow the common development origins (Vite:5173, CRA:3000). Add more if your frontend uses a different port.
-		configuration.setAllowedOrigins(List.of("http://localhost:5173", "http://localhost:3000"));
+		configuration.setAllowedOrigins(List.of("http://localhost:5173", "http://react-frontend-final-2026.s3-website-us-east-1.amazonaws.com" ));
 		configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
 		configuration.setAllowedHeaders(List.of("*"));
 		configuration.setAllowCredentials(true); // CRITICAL: This allows the session cookie to be sent during POSTs
